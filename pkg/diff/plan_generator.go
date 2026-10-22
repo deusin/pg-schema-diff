@@ -181,6 +181,7 @@ func Generate(
 }
 
 func generateMigrationStatements(oldSchema, newSchema schema.Schema, planOptions *planOptions) ([]Statement, error) {
+	oldSchema, newSchema = withoutPartitionPrivileges(oldSchema), withoutPartitionPrivileges(newSchema)
 	diff, _, err := buildSchemaDiff(oldSchema, newSchema)
 	if err != nil {
 		return nil, err
@@ -277,6 +278,24 @@ func setSchemaForEmptyDatabase(ctx context.Context, emptyDb *tempdb.Database, ta
 
 func schemaFromTempDb(ctx context.Context, db *tempdb.Database, plan *planOptions) (schema.Schema, error) {
 	return schema.GetSchema(ctx, db.ConnPool, append(plan.getSchemaOpts, db.ExcludeMetadataOptions...)...)
+}
+
+// withoutPartitionPrivileges returns a copy of the schema with the privileges
+// of every partition cleared. Privileges on partitions are not managed:
+// PostgreSQL does not carry a parent's GRANT to its partitions, so whatever
+// creates them -- pg_partman's inherit_privileges, a trigger, a script -- owns
+// their grants. Clearing them on both sides means a partition's grants never
+// appear in a plan and never block one.
+func withoutPartitionPrivileges(s schema.Schema) schema.Schema {
+	tables := make([]schema.Table, len(s.Tables))
+	for i, t := range s.Tables {
+		if t.IsPartition() {
+			t.Privileges = nil
+		}
+		tables[i] = t
+	}
+	s.Tables = tables
+	return s
 }
 
 // clearTablePrivileges returns a copy of the schema with all table privileges cleared.

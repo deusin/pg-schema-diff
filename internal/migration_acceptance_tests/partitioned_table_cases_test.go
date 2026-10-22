@@ -1156,6 +1156,97 @@ var partitionedTableAcceptanceTestCases = []acceptanceTestCase{
 		expectedPlanErrorIs: diff.ErrNotImplemented,
 	},
 	{
+		name:  "Unchanged privileges on partitions",
+		roles: []string{"app_user"},
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT, INSERT ON foobar TO app_user;
+            GRANT SELECT, INSERT ON foobar_1 TO app_user;
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT, INSERT ON foobar TO app_user;
+            GRANT SELECT, INSERT ON foobar_1 TO app_user;
+			`,
+		},
+		expectEmptyPlan: true,
+	},
+	{
+		name:  "Alter partitioned table whose partitions have privileges",
+		roles: []string{"app_user"},
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT ON foobar_1 TO app_user;
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255),
+                bar TEXT
+            ) PARTITION BY LIST (foo);
+            CREATE INDEX foobar_bar_idx ON foobar(bar);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT ON foobar_1 TO app_user;
+			`,
+		},
+		expectedHazardTypes: []diff.MigrationHazardType{
+			diff.MigrationHazardTypeIndexBuild,
+		},
+	},
+	{
+		name:  "Privileges on partitions are not managed",
+		roles: []string{"app_user"},
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT ON foobar_1 TO app_user;
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT, INSERT ON foobar_1 TO app_user;
+			`,
+		},
+		expectedDBSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            GRANT SELECT ON foobar_1 TO app_user;
+			`,
+		},
+		expectEmptyPlan: true,
+	},
+	{
 		name: "Re-creating base table causes partitions to be re-created",
 		oldSchemaDDL: []string{
 			`

@@ -181,7 +181,7 @@ var privilegeAcceptanceTestCases = []acceptanceTestCase{
 		},
 	},
 	{
-		name:  "Privilege on new partition (not implemented)",
+		name:  "Privilege on new partition is not managed",
 		roles: []string{"app_user"},
 		oldSchemaDDL: []string{
 			`
@@ -199,10 +199,17 @@ var privilegeAcceptanceTestCases = []acceptanceTestCase{
 				GRANT SELECT ON foobar_1 TO app_user;
 			`,
 		},
-		expectedPlanErrorIs: diff.ErrNotImplemented,
+		expectedDBSchemaDDL: []string{
+			`
+				CREATE TABLE foobar(
+					category TEXT
+				) partition by list (category);
+				CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('category');
+			`,
+		},
 	},
 	{
-		name:  "Add privilege on existing partition (not implemented)",
+		name:  "Privilege added on existing partition is not managed",
 		roles: []string{"app_user"},
 		oldSchemaDDL: []string{
 			`
@@ -221,7 +228,15 @@ var privilegeAcceptanceTestCases = []acceptanceTestCase{
 				GRANT SELECT ON foobar_1 TO app_user;
 			`,
 		},
-		expectedPlanErrorIs: diff.ErrNotImplemented,
+		expectedDBSchemaDDL: []string{
+			`
+				CREATE TABLE foobar(
+					category TEXT
+				) partition by list (category);
+				CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('category');
+			`,
+		},
+		expectEmptyPlan: true,
 	},
 }
 

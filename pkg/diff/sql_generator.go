@@ -809,9 +809,6 @@ func (t *tableSQLVertexGenerator) Add(table schema.Table) ([]Statement, error) {
 		if len(table.Policies) > 0 {
 			return nil, fmt.Errorf("policies on partitions: %w", ErrNotImplemented)
 		}
-		if len(table.Privileges) > 0 {
-			return nil, fmt.Errorf("privileges on partitions: %w", ErrNotImplemented)
-		}
 		// We attach the partitions separately. So the partition must have all the same check constraints
 		// as the original table
 		table.CheckConstraints = append(table.CheckConstraints, t.tablesInNewSchemaByName[table.ParentTable.GetName()].CheckConstraints...)
@@ -1071,11 +1068,6 @@ func (t *tableSQLVertexGenerator) alterPartition(diff tableDiff) ([]Statement, e
 		// Policy diffing on individual partitions cannot be supported until where a SQL statement is generated is
 		// _independent_ of how it is ordered.
 		return nil, fmt.Errorf("policies on partitions: %w", ErrNotImplemented)
-	}
-	if !diff.privilegesDiff.isEmpty() {
-		// Privilege diffing on individual partitions cannot be supported until where a SQL statement is generated is
-		// _independent_ of how it is ordered.
-		return nil, fmt.Errorf("privileges on partitions: %w", ErrNotImplemented)
 	}
 
 	var alteredParentColumnsByName map[string]columnDiff
