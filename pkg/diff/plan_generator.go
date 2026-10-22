@@ -225,6 +225,11 @@ func assertValidPlan(ctx context.Context,
 	// on the database.
 	setMaxConnectionsIfNotSet(tempDb.ConnPool, tempDbMaxConnections)
 
+	// A partition's own check constraints and policies cannot be built from
+	// scratch -- Add refuses them -- and the plan has already refused any change
+	// to them, so they are identical on both sides. Leave them out of the
+	// rebuild and of the comparison.
+	currentSchema, newSchema = withoutPartitionCheckConstraintsAndPolicies(currentSchema), withoutPartitionCheckConstraintsAndPolicies(newSchema)
 	if err := setSchemaForEmptyDatabase(ctx, tempDb, currentSchema, planOptions); err != nil {
 		return fmt.Errorf("inserting schema in temporary database: %w", err)
 	}
@@ -238,7 +243,7 @@ func assertValidPlan(ctx context.Context,
 		return fmt.Errorf("fetching schema from migrated database: %w", err)
 	}
 
-	return assertMigratedSchemaMatchesTarget(migratedSchema, newSchema, planOptions)
+	return assertMigratedSchemaMatchesTarget(withoutPartitionCheckConstraintsAndPolicies(migratedSchema), newSchema, planOptions)
 }
 
 func setMaxConnectionsIfNotSet(db *sql.DB, defaultMax int) {
@@ -291,6 +296,20 @@ func withoutPartitionPrivileges(s schema.Schema) schema.Schema {
 	for i, t := range s.Tables {
 		if t.IsPartition() {
 			t.Privileges = nil
+		}
+		tables[i] = t
+	}
+	s.Tables = tables
+	return s
+}
+
+// withoutPartitionCheckConstraintsAndPolicies returns a copy of the schema
+// with every partition's check constraints and policies cleared.
+func withoutPartitionCheckConstraintsAndPolicies(s schema.Schema) schema.Schema {
+	tables := make([]schema.Table, len(s.Tables))
+	for i, t := range s.Tables {
+		if t.IsPartition() {
+			t.CheckConstraints, t.Policies = nil, nil
 		}
 		tables[i] = t
 	}

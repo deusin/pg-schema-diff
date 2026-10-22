@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stripe/pg-schema-diff/internal/pgidentifier"
 	"github.com/stripe/pg-schema-diff/internal/schema"
 )
@@ -1061,10 +1062,10 @@ func (t *tableSQLVertexGenerator) alterPartition(diff tableDiff) ([]Statement, e
 	if diff.old.ForValues != diff.new.ForValues {
 		return nil, fmt.Errorf("altering partition FOR VALUES: %w", ErrNotImplemented)
 	}
-	if !diff.checkConstraintDiff.isEmpty() {
+	if listChanged(diff.checkConstraintDiff) {
 		return nil, fmt.Errorf("check constraints on partitions: %w", ErrNotImplemented)
 	}
-	if !diff.policiesDiff.isEmpty() {
+	if listChanged(diff.policiesDiff) {
 		// Policy diffing on individual partitions cannot be supported until where a SQL statement is generated is
 		// _independent_ of how it is ordered.
 		return nil, fmt.Errorf("policies on partitions: %w", ErrNotImplemented)
@@ -2848,4 +2849,23 @@ func columnIdentityTypeToModifier(val schema.ColumnIdentityType) (string, error)
 	default:
 		return "", fmt.Errorf("unknown identity type %q", val)
 	}
+}
+
+// listChanged reports a real change in a list diff. diffLists records every
+// name-matched pair as an alter -- unchanged ones included -- so isEmpty() is
+// false whenever both sides hold the same element; an alter counts only when
+// its two sides differ.
+func listChanged[S schema.Object, D interface {
+	GetOld() S
+	GetNew() S
+}](d listDiff[S, D]) bool {
+	if len(d.adds) > 0 || len(d.deletes) > 0 {
+		return true
+	}
+	for _, a := range d.alters {
+		if !cmp.Equal(a.GetOld(), a.GetNew(), cmpopts.EquateEmpty()) {
+			return true
+		}
+	}
+	return false
 }

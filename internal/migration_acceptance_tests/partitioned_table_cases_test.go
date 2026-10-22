@@ -1156,6 +1156,127 @@ var partitionedTableAcceptanceTestCases = []acceptanceTestCase{
 		expectedPlanErrorIs: diff.ErrNotImplemented,
 	},
 	{
+		name: "Unchanged check constraint on a partition",
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 0);
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 0);
+			`,
+		},
+		expectEmptyPlan: true,
+	},
+	{
+		name: "Alter partitioned table whose partition has a check constraint",
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 0);
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE INDEX foobar_id_idx ON foobar(id);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 0);
+			`,
+		},
+		expectedHazardTypes: []diff.MigrationHazardType{diff.MigrationHazardTypeIndexBuild},
+	},
+	{
+		name: "Changing a check constraint on a partition errors",
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 0);
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            ALTER TABLE foobar_1 ADD CONSTRAINT foobar_1_id_check CHECK (id > 1);
+			`,
+		},
+		expectedPlanErrorIs: diff.ErrNotImplemented,
+	},
+	{
+		name: "Unchanged policy on a partition",
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            CREATE POLICY foobar_1_policy ON foobar_1 USING (id > 0);
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            CREATE POLICY foobar_1_policy ON foobar_1 USING (id > 0);
+			`,
+		},
+		expectEmptyPlan: true,
+	},
+	{
+		name: "Changing a policy on a partition errors",
+		oldSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            CREATE POLICY foobar_1_policy ON foobar_1 USING (id > 0);
+			`,
+		},
+		newSchemaDDL: []string{
+			`
+            CREATE TABLE foobar(
+                id INT,
+                foo VARCHAR(255)
+            ) PARTITION BY LIST (foo);
+            CREATE TABLE foobar_1 PARTITION OF foobar FOR VALUES IN ('foo_1');
+            CREATE POLICY foobar_1_policy ON foobar_1 USING (id > 1);
+			`,
+		},
+		expectedPlanErrorIs: diff.ErrNotImplemented,
+	},
+	{
 		name:  "Unchanged privileges on partitions",
 		roles: []string{"app_user"},
 		oldSchemaDDL: []string{
