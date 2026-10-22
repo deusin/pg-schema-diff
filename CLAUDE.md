@@ -165,8 +165,8 @@ pg-schema-diff plan --from-dsn "..." --to-dir ./schema --output-format json
 
 ```go
 import (
-    "github.com/stripe/pg-schema-diff/pkg/diff"
-    "github.com/stripe/pg-schema-diff/pkg/tempdb"
+    "github.com/ags-slc/pg-schema-diff/pkg/diff"
+    "github.com/ags-slc/pg-schema-diff/pkg/tempdb"
 )
 
 // Create temp database factory for plan validation

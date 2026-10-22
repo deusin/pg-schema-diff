@@ -8,18 +8,18 @@ import (
 	"os"
 	"testing"
 
+	"github.com/ags-slc/pg-schema-diff/internal/pgdump"
+	"github.com/ags-slc/pg-schema-diff/internal/pgengine"
+	"github.com/ags-slc/pg-schema-diff/pkg/diff"
+	"github.com/ags-slc/pg-schema-diff/pkg/log"
+	"github.com/ags-slc/pg-schema-diff/pkg/sqldb"
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/stripe/pg-schema-diff/internal/pgdump"
-	"github.com/stripe/pg-schema-diff/internal/pgengine"
-	"github.com/stripe/pg-schema-diff/pkg/diff"
-	"github.com/stripe/pg-schema-diff/pkg/log"
-	"github.com/stripe/pg-schema-diff/pkg/sqldb"
 
-	"github.com/stripe/pg-schema-diff/pkg/tempdb"
+	"github.com/ags-slc/pg-schema-diff/pkg/tempdb"
 )
 
 var (

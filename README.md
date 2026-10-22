@@ -120,11 +120,11 @@ brew install pg-schema-diff
 ```
 Go toolchain:
 ```bash
-go install github.com/stripe/pg-schema-diff/cmd/pg-schema-diff@latest
+go install github.com/ags-slc/pg-schema-diff/cmd/pg-schema-diff@latest
 ```
 ## Library
 ```bash
-go get -u github.com/stripe/pg-schema-diff@latest
+go get -u github.com/ags-slc/pg-schema-diff@latest
 ```
 # Using CLI
 ## 1. Apply schema to fresh database

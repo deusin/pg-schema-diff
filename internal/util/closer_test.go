@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/ags-slc/pg-schema-diff/internal/util"
 	"github.com/stretchr/testify/require"
-	"github.com/stripe/pg-schema-diff/internal/util"
 )
 
 func TestNoOpCloser(t *testing.T) {

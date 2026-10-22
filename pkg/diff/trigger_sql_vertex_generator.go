@@ -3,8 +3,8 @@ package diff
 import (
 	"fmt"
 
+	"github.com/ags-slc/pg-schema-diff/internal/schema"
 	"github.com/google/go-cmp/cmp"
-	"github.com/stripe/pg-schema-diff/internal/schema"
 )
 
 type triggerDiff struct {

@@ -6,8 +6,8 @@ import (
 	"os/exec"
 	"regexp"
 
+	"github.com/ags-slc/pg-schema-diff/internal/pgengine"
 	"github.com/hashicorp/go-version"
-	"github.com/stripe/pg-schema-diff/internal/pgengine"
 )
 
 const (

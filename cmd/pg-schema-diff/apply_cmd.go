@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ags-slc/pg-schema-diff/pkg/diff"
+	"github.com/ags-slc/pg-schema-diff/pkg/log"
 	"github.com/jackc/pgx/v4"
 	"github.com/spf13/cobra"
-	"github.com/stripe/pg-schema-diff/pkg/diff"
-	"github.com/stripe/pg-schema-diff/pkg/log"
 )
 
 func buildApplyCmd() *cobra.Command {

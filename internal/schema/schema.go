@@ -9,10 +9,10 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/ags-slc/pg-schema-diff/internal/concurrent"
+	"github.com/ags-slc/pg-schema-diff/internal/queries"
 	"github.com/jackc/pgx/v4"
 	"github.com/mitchellh/hashstructure/v2"
-	"github.com/stripe/pg-schema-diff/internal/concurrent"
-	"github.com/stripe/pg-schema-diff/internal/queries"
 )
 
 type (

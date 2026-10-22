@@ -9,13 +9,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ags-slc/pg-schema-diff/internal/schema"
+	externalschema "github.com/ags-slc/pg-schema-diff/pkg/schema"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/kr/pretty"
-	"github.com/stripe/pg-schema-diff/internal/schema"
-	externalschema "github.com/stripe/pg-schema-diff/pkg/schema"
 
-	"github.com/stripe/pg-schema-diff/pkg/log"
-	"github.com/stripe/pg-schema-diff/pkg/tempdb"
+	"github.com/ags-slc/pg-schema-diff/pkg/log"
+	"github.com/ags-slc/pg-schema-diff/pkg/tempdb"
 )
 
 const (

@@ -1,4 +1,4 @@
-module github.com/stripe/pg-schema-diff
+module github.com/ags-slc/pg-schema-diff
 
 go 1.25.5
 

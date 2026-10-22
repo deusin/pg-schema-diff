@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/ags-slc/pg-schema-diff/internal/pgengine"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
-	"github.com/stripe/pg-schema-diff/internal/pgengine"
 )
 
 type cmdTestSuite struct {

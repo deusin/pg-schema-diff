@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/stripe/pg-schema-diff/internal/pgdump"
-	"github.com/stripe/pg-schema-diff/internal/pgengine"
+	"github.com/ags-slc/pg-schema-diff/internal/pgdump"
+	"github.com/ags-slc/pg-schema-diff/internal/pgengine"
 )
 
 func (suite *cmdTestSuite) TestApplyCmd() {

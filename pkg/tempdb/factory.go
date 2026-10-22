@@ -9,13 +9,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ags-slc/pg-schema-diff/internal/pgidentifier"
+	"github.com/ags-slc/pg-schema-diff/internal/util"
+	"github.com/ags-slc/pg-schema-diff/pkg/log"
+	"github.com/ags-slc/pg-schema-diff/pkg/schema"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 	_ "github.com/jackc/pgx/v4/stdlib"
-	"github.com/stripe/pg-schema-diff/internal/pgidentifier"
-	"github.com/stripe/pg-schema-diff/internal/util"
-	"github.com/stripe/pg-schema-diff/pkg/log"
-	"github.com/stripe/pg-schema-diff/pkg/schema"
 )
 
 const (

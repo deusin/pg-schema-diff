@@ -7,10 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/stripe/pg-schema-diff/internal/schema"
-	"github.com/stripe/pg-schema-diff/pkg/log"
-	"github.com/stripe/pg-schema-diff/pkg/sqldb"
-	"github.com/stripe/pg-schema-diff/pkg/tempdb"
+	"github.com/ags-slc/pg-schema-diff/internal/schema"
+	"github.com/ags-slc/pg-schema-diff/pkg/log"
+	"github.com/ags-slc/pg-schema-diff/pkg/sqldb"
+	"github.com/ags-slc/pg-schema-diff/pkg/tempdb"
 )
 
 type schemaSourcePlanDeps struct {
